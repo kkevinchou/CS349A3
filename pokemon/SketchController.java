@@ -18,6 +18,8 @@ class SketchController extends JComponent {
 	private Graphics2D graphics2D;
 	private int currentX, currentY, oldX, oldY;
 	
+	private int oldWidth, oldHeight;
+	
 	private CanvasView canvasView;
 	private SceneModel sceneModel;
 
@@ -71,14 +73,11 @@ class SketchController extends JComponent {
 	}
 
 	public void paintComponent(Graphics g) {
-		if (image == null) {
-			image = createImage(getSize().width, getSize().height);
-			graphics2D = (Graphics2D) image.getGraphics();
-			graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON);
-			canvasView.setGraphics(graphics2D);
-			clear();
+		if (image == null || oldWidth != getSize().width || oldHeight != getSize().width) {
+			initImage();
+			canvasView.updateView();
 		}
+		
 		g.drawImage(image, 0, 0, null);
 	}
 	
@@ -91,5 +90,14 @@ class SketchController extends JComponent {
 		graphics2D.fillRect(0, 0, getSize().width, getSize().height);
 		graphics2D.setPaint(Color.black);
 		repaint();
+	}
+	
+	private void initImage() {
+		image = createImage(getSize().width, getSize().height);
+		graphics2D = (Graphics2D) image.getGraphics();
+		graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+		canvasView.setGraphics(graphics2D);
+		clear();
 	}
 }
