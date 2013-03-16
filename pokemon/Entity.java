@@ -11,7 +11,7 @@ public class Entity {
 	
 	public Entity(int x, int y) {
 		points = new ArrayList<Point>();
-		points.add(new Point(x, y));
+		addPoint(x, y);
 	}
 	
 	public List<Point> getPoints() {

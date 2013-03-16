@@ -1,7 +1,11 @@
 package pokemon;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.Stroke;
 import java.util.List;
 
 public class CanvasView implements IView {
@@ -30,6 +34,14 @@ public class CanvasView implements IView {
 				graphics.drawLine(prevPoint.x, prevPoint.y, curPoint.x, curPoint.y);
 				prevPoint = curPoint;
 			}
+		}
+		
+		Polygon selection = model.getSelection();
+		if (selection != null) {
+			Stroke drawingStroke = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+			graphics.setStroke(drawingStroke);
+			graphics.setColor(new Color(0, 255, 0));
+			graphics.drawPolyline(selection.xpoints, selection.ypoints, selection.npoints);
 		}
 	}
 	

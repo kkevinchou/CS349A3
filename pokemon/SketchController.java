@@ -32,13 +32,19 @@ class SketchController extends JComponent {
 		
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				oldX = e.getX();
-				oldY = e.getY();
+				
+				int x = e.getX();
+				int y = e.getY();
+				
+				oldX = x;
+				oldY = y;
+				
+				sceneModel.clearSelection();
 				
 				if (mode == Mode.DRAW) {
-					sceneModel.beginEntity(e.getX(), e.getY());
+					sceneModel.beginEntity(x, y);
 				} else if (mode == Mode.SELECT) {
-					
+					sceneModel.beginSelection(x, y);
 				}
 			}
 		});
@@ -47,13 +53,18 @@ class SketchController extends JComponent {
 			public void mouseDragged(MouseEvent e) {
 				clear();
 				
-				currentX = e.getX();
-				currentY = e.getY();
+				int x = e.getX();
+				int y = e.getY();
+				
+				currentX = x;
+				currentY = y;
 				
 				if (mode == Mode.DRAW) {
-					sceneModel.addPointToEntity(e.getX(), e.getY());
+					sceneModel.addPointToEntity(x, y);
 				} else if (mode == Mode.ERASE) {
 					sceneModel.erase(oldX, oldY, currentX, currentY);
+				} else if (mode == Mode.SELECT) {
+					sceneModel.addPointToSelection(x, y);
 				}
 				
 				oldX = currentX;
@@ -67,6 +78,8 @@ class SketchController extends JComponent {
             public void mouseReleased(MouseEvent e) {
             	if (mode == Mode.DRAW) {
                 	sceneModel.finishEntity();
+            	} else if (mode == Mode.SELECT) {
+                	sceneModel.finishSelection();
             	}
             }
         });

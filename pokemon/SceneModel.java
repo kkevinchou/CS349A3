@@ -1,6 +1,7 @@
 package pokemon;
 
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,11 +10,14 @@ import java.util.List;
 public class SceneModel implements IModel {
 	private List<Entity> entities;
 	private List<IView> views;
+	private List<Entity> selectedEntities;
 	private Entity currentModel;
+	private Polygon selection;
 	
 	public SceneModel() {
 		currentModel = null;
 		entities = new ArrayList<Entity>();
+		selectedEntities = new ArrayList<Entity>();
 		views = new ArrayList<IView>();
 	}
 	
@@ -45,15 +49,41 @@ public class SceneModel implements IModel {
 	}
 	
 	public void beginSelection(int x, int y) {
-		
+		selection = new Polygon();
+		addPointToSelection(x, y);
 	}
 	
 	public void addPointToSelection(int x, int y) {
-		
+		selection.addPoint(x, y);
+		updateAllViews();
 	}
 	
-	public void endSelection() {
+	public void finishSelection() {
+//		selection.addPoint(selection.xpoints[0], selection.ypoints[0]);
 		
+		for (Entity entity : entities) {
+			boolean fullyContained = true;
+			
+			List<Point> points = entity.getPoints();
+			for (Point point : points) {
+				if (!selection.contains(point)) {
+					fullyContained = false;
+					break;
+				}
+			}
+			
+			if (fullyContained) {
+				selectedEntities.add(entity);
+			}
+		}
+		
+		System.out.println("Selected count: " + selectedEntities.size());
+		
+		updateAllViews();
+	}
+	
+	public Polygon getSelection() {
+		return selection;
 	}
 
 	public void beginEntity(int x, int y) {
@@ -88,5 +118,10 @@ public class SceneModel implements IModel {
 		for (IView view : views) {
 			view.updateView();
 		}
+	}
+	
+	public void clearSelection() {
+		selectedEntities.clear();
+		selection = null;
 	}
 }

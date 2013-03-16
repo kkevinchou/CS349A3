@@ -2,6 +2,7 @@ package pokemon;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -41,6 +42,7 @@ public class Main {
 	
 	private static JToolBar createToolBar(final SketchController sketch) {
 		JToolBar toolbar = new JToolBar();
+		toolbar.setLayout(new FlowLayout(FlowLayout.CENTER));
 		
 		JButton drawButton = new JButton("Draw");
 		drawButton.addActionListener(new ActionListener() {
@@ -59,7 +61,7 @@ public class Main {
 		toolbar.add(eraseButton);
 		
 		JButton selectButton = new JButton("Select");
-		eraseButton.addActionListener(new ActionListener() {
+		selectButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				sketch.setMode(Mode.SELECT);
 			}
