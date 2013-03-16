@@ -85,6 +85,10 @@ public class SceneModel implements IModel {
 	public Polygon getSelection() {
 		return selection;
 	}
+	
+	public List<Entity> getSelectedEntities() {
+		return Collections.unmodifiableList(selectedEntities);
+	}
 
 	public void beginEntity(int x, int y) {
 		currentModel = new Entity(x, y);

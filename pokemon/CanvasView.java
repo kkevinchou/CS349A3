@@ -24,11 +24,22 @@ public class CanvasView implements IView {
 		}
 		
 		List<Entity> entities = model.getEntities();
+		List<Entity> selectedEntities = model.getSelectedEntities();
 		
+		graphics.setColor(new Color(255, 132, 44));
 		for (Entity entity : entities) {
 			List<Point> points = entity.getPoints();
-			Point prevPoint = points.get(0);
 			
+			Stroke normalStyle = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
+			Stroke selectedStyle = new BasicStroke(4, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
+			
+			Stroke style = normalStyle;
+			if (selectedEntities.contains(entity)) {
+				style = selectedStyle;
+			}
+			graphics.setStroke(style);
+			
+			Point prevPoint = points.get(0);
 			for (int i = 1; i < points.size(); i++) {
 				Point curPoint = points.get(i);
 				graphics.drawLine(prevPoint.x, prevPoint.y, curPoint.x, curPoint.y);
@@ -40,7 +51,7 @@ public class CanvasView implements IView {
 		if (selection != null) {
 			Stroke drawingStroke = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
 			graphics.setStroke(drawingStroke);
-			graphics.setColor(new Color(0, 255, 0));
+			graphics.setColor(new Color(0, 74, 255));
 			graphics.drawPolyline(selection.xpoints, selection.ypoints, selection.npoints);
 		}
 	}
