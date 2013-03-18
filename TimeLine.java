@@ -184,6 +184,10 @@ public class TimeLine {
 		
 		int numNewFrames = curFrame - startFrame;
 		
+		if (numNewFrames <= 0) {
+			return;
+		}
+		
 		System.out.println("CUR " + curFrame);
 		System.out.println("NEW " + numNewFrames);
 		System.out.println("TOTAL " + timeFrames.size());
