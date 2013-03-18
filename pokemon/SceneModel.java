@@ -1,8 +1,6 @@
 package pokemon;
 
-import java.awt.Point;
 import java.awt.Polygon;
-import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,36 +17,9 @@ public class SceneModel implements IModel {
 		views = new ArrayList<IView>();
 	}
 	
-	public void erase(int startX, int startY, int endX, int endY) {
-		Point start = new Point(startX, startY);
-		Point end = new Point(endX, endY);
-		
-		Line2D eraseLine = new Line2D.Float(start, end);
-		
-		int i = 0;
-		while (i < entities.size()) {
-			Entity entity = entities.get(i);
-			
-			boolean intersects = false;
-			for (Line2D line : entity.getLines()) {
-				if (eraseLine.intersectsLine(line)) {
-					intersects = true;
-				}
-			}
-			
-			if (intersects) {
-				entity.visible = false;
-				entities.remove(i);
-			} else {
-				i++;
-			}
-		}
-		
-		updateAllViews();
-	}
-	
 	public void addEntity(Entity entity) {
 		entities.add(entity);
+		updateAllViews();
 	}
 	
 	public List<Entity> getEntities() {

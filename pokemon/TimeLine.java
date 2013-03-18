@@ -12,11 +12,9 @@ import javax.swing.Timer;
 
 public class TimeLine {
 	class RecordTimer implements ActionListener {
-		Vector2D translation;
-		List<Map<Entity, Vector2D>> timeFrames;
+		private List<Map<Entity, AnimationData>> timeFrames;
 		
-		public RecordTimer(List<Map<Entity, Vector2D>> timeFrames) {
-			translation = Vector2D.ZERO();
+		public RecordTimer(List<Map<Entity, AnimationData>> timeFrames) {
 			this.timeFrames = timeFrames;
 		}
 		
@@ -27,23 +25,26 @@ public class TimeLine {
 			while (timeFrames.size() > frame) {
 				timeFrames.remove(frame);
 			}
+			curFrame = frame;
 			
-			Map<Entity, Vector2D> timeFrame = new HashMap<Entity, Vector2D>();
+			Map<Entity, AnimationData> timeFrame = new HashMap<Entity, AnimationData>();
 			for (Entity entity : selectedEntities) {
-				timeFrame.put(entity, entity.getPosition());
-				System.out.println(entity.getPosition());
+				AnimationData data = new AnimationData();
+				data.visible = entity.visible;
+				data.position = entity.getPosition();
+				
+				timeFrame.put(entity, data);
 			}
 			timeFrames.add(timeFrame);
 			slider.setMaximum(timeFrames.size());
-			
 			slider.setValue(frame + 1);
 		}
 	}
 	
 	class AnimationTimer implements ActionListener {
-		List<Map<Entity, Vector2D>> timeFrames;
+		private List<Map<Entity, AnimationData>> timeFrames;
 		
-		public AnimationTimer(List<Map<Entity, Vector2D>> timeFrames) {
+		public AnimationTimer(List<Map<Entity, AnimationData>> timeFrames) {
 			this.timeFrames = timeFrames;
 		}
 
@@ -56,20 +57,14 @@ public class TimeLine {
 				return;
 			}
 			
-			Map<Entity, Vector2D> timeFrame = timeFrames.get(frame);
-			
-			for (Map.Entry<Entity, Vector2D> entry : timeFrame.entrySet()) {
-				Entity entity = entry.getKey();
-				Vector2D position = entry.getValue();
-				entity.setPosition(position);
-			}
+			setCurFrame(frame);
 			view.updateView();
 			slider.setValue(frame + 1);
 		}
 	}
 
 	private List<Entity> selectedEntities;
-	private List<Map<Entity, Vector2D>> timeFrames;
+	private List<Map<Entity, AnimationData>> timeFrames;
 	
 	private RecordTimer recordTimer;
 	private AnimationTimer animationTimer;
@@ -82,7 +77,7 @@ public class TimeLine {
 	public TimeLine(CanvasView view, JSlider slider) {
 		curFrame = 0;
 		this.view = view;
-		timeFrames = new ArrayList<Map<Entity, Vector2D>>();
+		timeFrames = new ArrayList<Map<Entity, AnimationData>>();
 		recordTimer = new RecordTimer(timeFrames);
 		animationTimer = new AnimationTimer(timeFrames);
 		timer = new Timer(16, null);
@@ -92,12 +87,14 @@ public class TimeLine {
 	public void setCurFrame(int frame) {
 		curFrame = (frame >= timeFrames.size()) ? timeFrames.size() - 1 : frame;
 		
-		Map<Entity, Vector2D> timeFrame = timeFrames.get(curFrame);
+		Map<Entity, AnimationData> timeFrame = timeFrames.get(curFrame);
 		
-		for (Map.Entry<Entity, Vector2D> entry : timeFrame.entrySet()) {
+		for (Map.Entry<Entity, AnimationData> entry : timeFrame.entrySet()) {
 			Entity entity = entry.getKey();
-			Vector2D position = entry.getValue();
-			entity.setPosition(position);
+			AnimationData data = entry.getValue();
+			
+			entity.setPosition(data.position);
+			entity.visible = data.visible;
 		}
 	}
 	
@@ -120,5 +117,25 @@ public class TimeLine {
 	
 	public void pause() {
 		timer.stop();
+	}
+	
+	public void erase(Entity entity) {
+		for (int i = curFrame; i < timeFrames.size(); i++) {
+			Map<Entity, AnimationData> frame = timeFrames.get(i);
+			AnimationData data = frame.get(entity);
+			data.visible = false;
+		}
+	}
+	
+	public void addEntity(Entity entity) {
+		for (int i = 0; i < curFrame; i++) {
+			Map<Entity, AnimationData> frame = timeFrames.get(i);
+			
+			AnimationData data = new AnimationData();
+			data.position = entity.getPosition();
+			data.visible = false;
+			
+			frame.put(entity,  data);
+		}
 	}
 }

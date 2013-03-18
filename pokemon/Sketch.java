@@ -10,6 +10,7 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,6 +70,7 @@ class Sketch extends JComponent {
 					
 					newEntity = new Entity(x, y);
 					sceneModel.addEntity(newEntity);
+					timeLine.addEntity(newEntity);
 				} else if (mode == Mode.ERASE) {
 					clearSelection();
 				} else if (mode == Mode.SELECT) {
@@ -95,7 +97,26 @@ class Sketch extends JComponent {
 				if (mode == Mode.DRAW) {
 					newEntity.addPoint(x, y);
 				} else if (mode == Mode.ERASE) {
-					sceneModel.erase(oldX, oldY, currentX, currentY);
+					Point start = new Point(oldX, oldY);
+					Point end = new Point(currentX, currentY);
+					
+					Line2D eraseLine = new Line2D.Float(start, end);
+					
+					List<Entity> entities = sceneModel.getEntities();
+					for (Entity entity : entities) {
+						boolean intersects = false;
+						for (Line2D line : entity.getLines()) {
+							if (eraseLine.intersectsLine(line)) {
+								intersects = true;
+								break;
+							}
+						}
+						
+						if (intersects) {
+							entity.visible = false;
+							timeLine.erase(entity);
+						}
+					}
 				} else if (mode == Mode.SELECT) {
 					selection.addPoint(x, y);
 				} else if (mode == Mode.ANIMATE) {
@@ -141,7 +162,7 @@ class Sketch extends JComponent {
         });
 	}
 	
-	private void clearSelection() {
+	public void clearSelection() {
 		selectedEntities.clear();
 		selection.reset();
 	}

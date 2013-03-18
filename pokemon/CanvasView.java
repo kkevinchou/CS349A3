@@ -35,6 +35,10 @@ public class CanvasView implements IView {
 		
 		graphics.setColor(new Color(255, 132, 44));
 		for (Entity entity : entities) {
+			if (!entity.visible) {
+				continue;
+			}
+			
 			List<Point> points = entity.getPoints();
 			
 			Stroke normalStyle = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);

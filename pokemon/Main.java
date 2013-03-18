@@ -12,6 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 enum Mode {
 	DRAW,
@@ -106,6 +108,14 @@ public class Main {
 		
 		sketch.setSlider(animationSlider);
 		animationSlider.addChangeListener(new SliderListener(sketch.timeLine));
+		animationSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+		        JSlider source = (JSlider)e.getSource();
+				if (source.getValueIsAdjusting()) {
+					sketch.clearSelection();
+		        }
+			}
+		});
 		
 		return panel;
 	}
