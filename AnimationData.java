@@ -1,4 +1,4 @@
-package pokemon;
+
 
 public class AnimationData {
 	public boolean visible;

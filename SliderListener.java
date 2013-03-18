@@ -1,4 +1,4 @@
-package pokemon;
+
 
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;

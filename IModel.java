@@ -1,4 +1,4 @@
-package pokemon;
+
 
 public interface IModel {
 	public void addView(IView view);
