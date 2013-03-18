@@ -10,12 +10,10 @@ import java.util.List;
 public class SceneModel implements IModel {
 	private List<Entity> entities;
 	private List<IView> views;
-	private Entity currentModel;
 	public Polygon selection;
 	public List<Entity> selectedEntities;
 	
 	public SceneModel() {
-		currentModel = null;
 		entities = new ArrayList<Entity>();
 		selectedEntities = new ArrayList<Entity>();
 		views = new ArrayList<IView>();
@@ -73,8 +71,6 @@ public class SceneModel implements IModel {
 	}
 	
 	public void finishSelection() {
-//		selection.addPoint(selection.xpoints[0], selection.ypoints[0]);
-		
 		for (Entity entity : entities) {
 			boolean fullyContained = true;
 			
@@ -90,8 +86,6 @@ public class SceneModel implements IModel {
 				selectedEntities.add(entity);
 			}
 		}
-		
-//		System.out.println("Selection count: " + selectedEntities.size());
 		
 		updateAllViews();
 	}

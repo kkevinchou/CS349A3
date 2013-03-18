@@ -90,7 +90,6 @@ class Sketch extends JComponent {
 					int dx = currentX - oldX;
 					int dy = currentY - oldY;
 					sceneModel.translateSelection(dx, dy);
-					timeLine.queueTranslation(new Vector2D(dx, dy));
 				}
 				
 				oldX = currentX;

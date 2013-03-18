@@ -20,10 +20,6 @@ public class TimeLine {
 			this.timeFrames = timeFrames;
 		}
 		
-		public void queueTranslation(Vector2D translation) {
-			this.translation = this.translation.add(translation);
-		}
-		
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			int frame = slider.getValue();
@@ -53,7 +49,7 @@ public class TimeLine {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int frame = slider.getValue() + 1;
+			int frame = slider.getValue();
 			
 			if (frame >= timeFrames.size()) {
 				timer.stop();
@@ -110,10 +106,6 @@ public class TimeLine {
 		this.selectedEntities = selectedEntities;
 		timer = new Timer(16, recordTimer);
 		timer.start();
-	}
-	
-	public void queueTranslation(Vector2D translation) {
-		recordTimer.queueTranslation(translation);
 	}
 	
 	public void endRecord() {
