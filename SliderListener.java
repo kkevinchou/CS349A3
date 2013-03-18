@@ -13,8 +13,10 @@ class SliderListener implements ChangeListener {
 	
     public void stateChanged(ChangeEvent e) {
         JSlider source = (JSlider)e.getSource();
-        if (source.getValueIsAdjusting()) {
-            timeLine.setCurFrame(source.getValue());
+        if (source.getValueIsAdjusting() && !timeLine.cloning) {
+            timeLine.setCurFrameAndDraw(source.getValue());
+        } else if (timeLine.cloning) {
+        	timeLine.setCurFrame(source.getValue());
         }
     }
 }

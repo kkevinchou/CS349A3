@@ -3,6 +3,7 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,7 @@ public class TimeLine {
 				
 				timeFrame.put(entity, data);
 			}
-			setCurFrame(frame);
+			setCurFrameAndDraw(frame);
 			
 			slider.setMaximum(timeFrames.size());
 			slider.setValue(frame + 1);
@@ -70,7 +71,7 @@ public class TimeLine {
 				return;
 			}
 			
-			setCurFrame(frame);
+			setCurFrameAndDraw(frame);
 			slider.setValue(frame + 1);
 		}
 	}
@@ -98,7 +99,7 @@ public class TimeLine {
 		this.slider = slider;
 	}
 	
-	public void setCurFrame(int frame) {
+	public void setCurFrameAndDraw(int frame) {
 		curFrame = (frame >= timeFrames.size()) ? timeFrames.size() - 1 : frame;
 		if (curFrame < 0) {
 			return;
@@ -112,6 +113,13 @@ public class TimeLine {
 			
 			entity.setPosition(data.position);
 			entity.visible = data.visible;
+		}
+	}
+	
+	public void setCurFrame(int frame) {
+		curFrame = (frame >= timeFrames.size()) ? timeFrames.size() - 1 : frame;
+		if (curFrame < 0) {
+			return;
 		}
 	}
 	
@@ -164,6 +172,8 @@ public class TimeLine {
 		}
 		cloning = true;
 		startFrame = curFrame;
+		
+		System.out.println("START " + startFrame);
 	}
 	
 	public void finishCloneFrames() {
@@ -174,74 +184,29 @@ public class TimeLine {
 		
 		int numNewFrames = curFrame - startFrame;
 		
-		if (numNewFrames <= 0) {
-			return;
-		}
-		
-		int prevLastPosition = timeFrames.size() - 1;
-		
-		System.out.println("NUM NEW FRAMES " + numNewFrames);
+		System.out.println("CUR " + curFrame);
+		System.out.println("NEW " + numNewFrames);
+		System.out.println("TOTAL " + timeFrames.size());
 		
 		for (int i = 0; i < numNewFrames; i++) {
 			timeFrames.add(new HashMap<Entity, AnimationData>());
 		}
 		
-		int counter1 = 0;
+		for (int i = timeFrames.size() - 1; i > curFrame; i--) {
+			Collections.swap(timeFrames, i, i - numNewFrames);
+		}
+		
+		for (int i = 1; i <= numNewFrames; i++) {
+			Map<Entity, AnimationData> originFrame = timeFrames.get(startFrame);
+			Map<Entity, AnimationData> targetFrame = timeFrames.get(startFrame + i);
+
+			targetFrame.clear();
+			for (Map.Entry<Entity, AnimationData> entry : originFrame.entrySet()) {
+				targetFrame.put(entry.getKey(), entry.getValue().copy());
+			}
+		}
+		
+		slider.setMaximum(timeFrames.size() + 1);
+		
 	}
-	
-//	public void finishCloneFrames() {
-//		if (!cloning) {
-//			return;
-//		}
-//		cloning = false;
-//		
-//		System.out.println("FINISH CLONE");
-//		
-//		int numNewFrames = curFrame - startFrame;
-//		
-//		if (numNewFrames <= 0) {
-//			return;
-//		}
-//		
-//		int prevLastPosition = timeFrames.size() - 1;
-//		
-//		System.out.println("NUM NEW FRAMES " + numNewFrames);
-//		
-//		for (int i = 0; i < numNewFrames; i++) {
-//			timeFrames.add(new HashMap<Entity, AnimationData>());
-//		}
-//		
-//		int counter1 = 0;
-//		
-//		int numFramesAfterCopySegment = prevLastPosition - numNewFrames;
-//		for (int i = 0; i < numFramesAfterCopySegment; i++) {
-//			counter1++;
-//			
-//			int originPosition = prevLastPosition - i;
-//			Map<Entity, AnimationData> originFrame = timeFrames.get(originPosition);
-//			Map<Entity, AnimationData> targetFrame = timeFrames.get(originPosition + numNewFrames);
-//			
-//			for (Map.Entry<Entity, AnimationData> entry : originFrame.entrySet()) {
-//				targetFrame.put(entry.getKey(), entry.getValue().copy());
-//			}
-//		}
-//		
-//		int counter2 = 0;
-//		
-//		for (int i = startFrame + 1; i <= prevLastPosition; i++) {
-//			counter2++;
-//			Map<Entity, AnimationData> sourceFrame = timeFrames.get(startFrame);
-//			Map<Entity, AnimationData> targetFrame = timeFrames.get(i);
-//
-//			targetFrame.clear();
-//			for (Map.Entry<Entity, AnimationData> entry : sourceFrame.entrySet()) {
-//				targetFrame.put(entry.getKey(), entry.getValue().copy());
-//			}
-//		}
-//		
-//		System.out.println(counter1);
-//		System.out.println(counter2);
-//		
-//		slider.setMaximum(slider.getMaximum() + numNewFrames);
-//	}
 }
