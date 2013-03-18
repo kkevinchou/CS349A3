@@ -38,13 +38,22 @@ public class Entity {
 	}
 	
 	public void translate(int dx, int dy) {
-		position.add(new Vector2D(dx, dy));
+		position = position.add(new Vector2D(dx, dy));
 		for (Point point : points) {
 			point.translate(dx, dy);
 		}
 	}
 	
+	public void translate(Vector2D translation) {
+		translate((int)translation.x, (int)translation.y);
+	}
+	
 	public Vector2D getPosition() {
-		return position;
+		return position.copy();
+	}
+	
+	public void setPosition(Vector2D position) {
+		Vector2D translation = position.sub(this.position);
+		translate(translation);
 	}
 }

@@ -73,7 +73,8 @@ public class Main {
 	}
 	
 	private static JPanel createPanel(final Sketch sketch) {
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new BorderLayout());
+		JPanel subPanel = new JPanel();
 		
 		JButton playButton = new JButton("Play");
 		playButton.addActionListener(new ActionListener() {
@@ -81,7 +82,7 @@ public class Main {
 				sketch.playAnimation();
 			}
 		});
-		panel.add(playButton);
+		subPanel.add(playButton);
 		
 		JButton pauseButton = new JButton("Pause");
 		pauseButton.addActionListener(new ActionListener() {
@@ -89,13 +90,21 @@ public class Main {
 				sketch.pauseAnimation();
 			}
 		});
-		panel.add(pauseButton);
+		subPanel.add(pauseButton);
+		
+		panel.add(subPanel, BorderLayout.PAGE_END);
 		
 		JSlider animationSlider = new JSlider();
 		animationSlider.setBorder(BorderFactory.createTitledBorder("Animation Slider"));
 		animationSlider.setValue(0);
 		animationSlider.setMaximum(0);
-		panel.add(animationSlider);
+		animationSlider.setMajorTickSpacing(16);
+		
+		animationSlider.setPaintTicks(true);
+		panel.add(animationSlider, BorderLayout.CENTER);
+		
+		sketch.setSlider(animationSlider);
+		animationSlider.addChangeListener(new SliderListener(sketch.timeLine));
 		
 		return panel;
 	}
