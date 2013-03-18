@@ -109,21 +109,9 @@ public class SceneModel implements IModel {
 	public List<Entity> getSelectedEntities() {
 		return Collections.unmodifiableList(selectedEntities);
 	}
-
-	public void beginEntity(int x, int y) {
-		currentModel = new Entity(x, y);
-		entities.add(currentModel);
-		updateAllViews();
-	}
 	
-	public void addPointToEntity(int x, int y) {
-		currentModel.addPoint(x, y);
-		updateAllViews();
-	}
-	
-	public void finishEntity() {
-		currentModel = null;
-		updateAllViews();
+	public void addEntity(Entity entity) {
+		entities.add(entity);
 	}
 	
 	public List<Entity> getEntities() {

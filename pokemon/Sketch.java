@@ -19,7 +19,6 @@ class Sketch extends JComponent {
 	private Image image;
 	private Graphics2D graphics2D;
 	private int currentX, currentY, oldX, oldY;
-	
 	private int oldWidth, oldHeight;
 	
 	private CanvasView canvasView;
@@ -29,6 +28,8 @@ class Sketch extends JComponent {
 	public TimeLine timeLine;
 	
 	JSlider slider;
+	
+	Entity newEntity;
 
 	public Sketch() {
 		setMode(Mode.DRAW);
@@ -36,6 +37,7 @@ class Sketch extends JComponent {
 		
 		sceneModel = new SceneModel();
 		canvasView = new CanvasView(sceneModel, this);
+		newEntity = null;
 		
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -55,7 +57,9 @@ class Sketch extends JComponent {
 				
 				if (mode == Mode.DRAW) {
 					sceneModel.clearSelection();
-					sceneModel.beginEntity(x, y);
+					
+					newEntity = new Entity(x, y);
+					sceneModel.addEntity(newEntity);
 				} else if (mode == Mode.ERASE) {
 					sceneModel.clearSelection();
 				} else if (mode == Mode.SELECT) {
@@ -77,7 +81,7 @@ class Sketch extends JComponent {
 				currentY = y;
 				
 				if (mode == Mode.DRAW) {
-					sceneModel.addPointToEntity(x, y);
+					newEntity.addPoint(x, y);
 				} else if (mode == Mode.ERASE) {
 					sceneModel.erase(oldX, oldY, currentX, currentY);
 				} else if (mode == Mode.SELECT) {
@@ -97,7 +101,8 @@ class Sketch extends JComponent {
 		addMouseListener(new MouseAdapter() {
             public void mouseReleased(MouseEvent e) {
             	if (mode == Mode.DRAW) {
-                	sceneModel.finishEntity();
+            		newEntity = null;
+//                	sceneModel.finishEntity();
             	} else if (mode == Mode.SELECT) {
                 	sceneModel.finishSelection();
             	} else if (mode == Mode.ANIMATE) {
