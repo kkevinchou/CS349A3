@@ -47,63 +47,6 @@ public class SceneModel implements IModel {
 		updateAllViews();
 	}
 	
-	public void translateSelection(int dx, int dy) {
-		for (Entity entity : selectedEntities) {
-			entity.translate(dx, dy);
-		}
-		selection.translate(dx, dy);
-		updateAllViews();
-	}
-	
-	public boolean pointIsInSelection(int x, int y) {
-		return selection.contains(x, y);
-	}
-	
-	public void beginSelection(int x, int y) {
-		selection = new Polygon();
-		addPointToSelection(x, y);
-		updateAllViews();
-	}
-	
-	public void addPointToSelection(int x, int y) {
-		selection.addPoint(x, y);
-		updateAllViews();
-	}
-	
-	public void finishSelection() {
-		for (Entity entity : entities) {
-			boolean fullyContained = true;
-			
-			List<Point> points = entity.getPoints();
-			for (Point point : points) {
-				if (!selection.contains(point)) {
-					fullyContained = false;
-					break;
-				}
-			}
-			
-			if (fullyContained) {
-				selectedEntities.add(entity);
-			}
-		}
-		
-		updateAllViews();
-	}
-	
-	public Polygon getSelection() {
-		return selection;
-	}
-	
-	public void clearSelection() {
-		selectedEntities.clear();
-		selection = new Polygon();
-		updateAllViews();
-	}
-	
-	public List<Entity> getSelectedEntities() {
-		return Collections.unmodifiableList(selectedEntities);
-	}
-	
 	public void addEntity(Entity entity) {
 		entities.add(entity);
 	}

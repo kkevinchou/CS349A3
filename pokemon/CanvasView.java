@@ -12,11 +12,15 @@ public class CanvasView implements IView {
 	private SceneModel model;
 	private Graphics2D graphics;
 	private Sketch sketch;
+	private Polygon selection;
+	List<Entity> selectedEntities;
 	
-	public CanvasView(SceneModel model, Sketch sketch) {
+	public CanvasView(SceneModel model, Sketch sketch, Polygon selection, List<Entity> selectedEntities) {
 		this.model = model;
 		this.sketch = sketch;
 		this.model.addView(this);
+		this.selection = selection;
+		this.selectedEntities = selectedEntities;
 	}
 
 	@Override
@@ -28,14 +32,10 @@ public class CanvasView implements IView {
 		sketch.clear();
 		
 		List<Entity> entities = model.getEntities();
-		List<Entity> selectedEntities = model.getSelectedEntities();
 		
 		graphics.setColor(new Color(255, 132, 44));
 		for (Entity entity : entities) {
 			List<Point> points = entity.getPoints();
-//			Vector2D translation = entity.getTranslation();
-//			int dx = (int)translation.x;
-//			int dy = (int)translation.y;
 			
 			Stroke normalStyle = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
 			Stroke selectedStyle = new BasicStroke(4, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
@@ -55,7 +55,7 @@ public class CanvasView implements IView {
 			}
 		}
 		
-		Polygon selection = model.getSelection();
+//		Polygon selection = model.getSelection();
 		if (selection != null) {
 			Stroke drawingStroke = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
 			graphics.setStroke(drawingStroke);

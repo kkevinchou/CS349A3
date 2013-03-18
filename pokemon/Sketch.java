@@ -4,11 +4,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JSlider;
@@ -24,19 +27,21 @@ class Sketch extends JComponent {
 	private CanvasView canvasView;
 	private SceneModel sceneModel;
 	
-	Polygon selection = null;
 	public TimeLine timeLine;
-	
 	JSlider slider;
 	
 	Entity newEntity;
+	Polygon selection;
+	List<Entity> selectedEntities;
 
 	public Sketch() {
 		setMode(Mode.DRAW);
 		setDoubleBuffered(false);
 		
 		sceneModel = new SceneModel();
-		canvasView = new CanvasView(sceneModel, this);
+		selectedEntities = new ArrayList<Entity>();
+		selection = new Polygon();
+		canvasView = new CanvasView(sceneModel, this, selection, selectedEntities);
 		newEntity = null;
 		
 		addMouseListener(new MouseAdapter() {
@@ -47,27 +52,34 @@ class Sketch extends JComponent {
 				oldX = x;
 				oldY = y;
 				
+				if (mode == Mode.BAD) {
+					mode = Mode.SELECT;
+				}
+				
 				if (mode == Mode.SELECT || mode == Mode.ANIMATE) {
-					if (sceneModel.pointIsInSelection(x, y)) {
+					if (selection.contains(x, y)) {
 						setMode(Mode.ANIMATE);
-					} else if (!sceneModel.pointIsInSelection(x, y)) {
+					} else {
 						setMode(Mode.SELECT);
 					}
 				}
 				
 				if (mode == Mode.DRAW) {
-					sceneModel.clearSelection();
+					clearSelection();
 					
 					newEntity = new Entity(x, y);
 					sceneModel.addEntity(newEntity);
 				} else if (mode == Mode.ERASE) {
-					sceneModel.clearSelection();
+					clearSelection();
 				} else if (mode == Mode.SELECT) {
-					sceneModel.clearSelection();
-					sceneModel.beginSelection(x, y);
+					clearSelection();
+					selection.addPoint(x, y);
 				} else if (mode == Mode.ANIMATE) {
-					selection = sceneModel.selection;
-					timeLine.record(sceneModel.selectedEntities);
+					if (selectedEntities.size() > 0) {
+						timeLine.record(selectedEntities);
+					} else {
+						mode = Mode.BAD;
+					}
 				}
 			}
 		});
@@ -85,11 +97,15 @@ class Sketch extends JComponent {
 				} else if (mode == Mode.ERASE) {
 					sceneModel.erase(oldX, oldY, currentX, currentY);
 				} else if (mode == Mode.SELECT) {
-					sceneModel.addPointToSelection(x, y);
+					selection.addPoint(x, y);
 				} else if (mode == Mode.ANIMATE) {
 					int dx = currentX - oldX;
 					int dy = currentY - oldY;
-					sceneModel.translateSelection(dx, dy);
+					
+					selection.translate(dx, dy);
+					for (Entity entity : selectedEntities) {
+						entity.translate(dx, dy);
+					}
 				}
 				
 				oldX = currentX;
@@ -101,14 +117,33 @@ class Sketch extends JComponent {
             public void mouseReleased(MouseEvent e) {
             	if (mode == Mode.DRAW) {
             		newEntity = null;
-//                	sceneModel.finishEntity();
             	} else if (mode == Mode.SELECT) {
-                	sceneModel.finishSelection();
+            		List<Entity> entities = sceneModel.getEntities();
+                	for (Entity entity : entities) {
+	        			boolean fullyContained = true;
+	        			
+	        			List<Point> points = entity.getPoints();
+	        			for (Point point : points) {
+	        				if (!selection.contains(point)) {
+	        					fullyContained = false;
+	        					break;
+	        				}
+	        			}
+	        			
+	        			if (fullyContained) {
+	        				selectedEntities.add(entity);
+	        			}
+	        		}
             	} else if (mode == Mode.ANIMATE) {
             		timeLine.endRecord();
             	}
             }
         });
+	}
+	
+	private void clearSelection() {
+		selectedEntities.clear();
+		selection.reset();
 	}
 	
 	public void setSlider(JSlider slider) {
@@ -121,7 +156,7 @@ class Sketch extends JComponent {
 	}
 	
 	public void playAnimation() {
-		sceneModel.clearSelection();
+		clearSelection();
 		timeLine.play();
 	}
 	

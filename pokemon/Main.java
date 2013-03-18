@@ -17,7 +17,8 @@ enum Mode {
 	DRAW,
 	ERASE,
 	SELECT,
-	ANIMATE
+	ANIMATE,
+	BAD
 }
 
 public class Main {
