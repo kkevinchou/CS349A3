@@ -22,12 +22,24 @@ public class TimeLine {
 		public void actionPerformed(ActionEvent e) {
 			int frame = slider.getValue();
 			
-			while (timeFrames.size() > frame) {
-				timeFrames.remove(frame);
-			}
-			curFrame = frame;
+			Map<Entity, AnimationData> timeFrame;
 			
-			Map<Entity, AnimationData> timeFrame = new HashMap<Entity, AnimationData>();
+			if (frame < timeFrames.size()) {
+				timeFrame = timeFrames.get(frame);
+			} else {
+				timeFrame = new HashMap<Entity, AnimationData>();
+				
+				if (frame > 0) {
+					for (Map.Entry<Entity, AnimationData> entry : timeFrames.get(frame - 1).entrySet()) {
+						Entity entity = entry.getKey();
+						AnimationData data = entry.getValue();
+						
+						timeFrame.put(entity, data.copy());
+					}
+				}
+				timeFrames.add(timeFrame);
+			}
+			
 			for (Entity entity : selectedEntities) {
 				AnimationData data = new AnimationData();
 				data.visible = entity.visible;
@@ -35,7 +47,8 @@ public class TimeLine {
 				
 				timeFrame.put(entity, data);
 			}
-			timeFrames.add(timeFrame);
+			setCurFrame(frame);
+			
 			slider.setMaximum(timeFrames.size());
 			slider.setValue(frame + 1);
 		}
@@ -58,7 +71,6 @@ public class TimeLine {
 			}
 			
 			setCurFrame(frame);
-			view.updateView();
 			slider.setValue(frame + 1);
 		}
 	}
@@ -73,8 +85,10 @@ public class TimeLine {
 	private JSlider slider;
 	
 	private int curFrame;
+	public boolean cloning;
 	
 	public TimeLine(CanvasView view, JSlider slider) {
+		cloning = false;
 		curFrame = 0;
 		this.view = view;
 		timeFrames = new ArrayList<Map<Entity, AnimationData>>();
@@ -86,6 +100,9 @@ public class TimeLine {
 	
 	public void setCurFrame(int frame) {
 		curFrame = (frame >= timeFrames.size()) ? timeFrames.size() - 1 : frame;
+		if (curFrame < 0) {
+			return;
+		}
 		
 		Map<Entity, AnimationData> timeFrame = timeFrames.get(curFrame);
 		
@@ -138,4 +155,93 @@ public class TimeLine {
 			frame.put(entity,  data);
 		}
 	}
+	
+	private int startFrame;
+	
+	public void cloneFrames() {
+		if (cloning) {
+			return;
+		}
+		cloning = true;
+		startFrame = curFrame;
+	}
+	
+	public void finishCloneFrames() {
+		if (!cloning) {
+			return;
+		}
+		cloning = false;
+		
+		int numNewFrames = curFrame - startFrame;
+		
+		if (numNewFrames <= 0) {
+			return;
+		}
+		
+		int prevLastPosition = timeFrames.size() - 1;
+		
+		System.out.println("NUM NEW FRAMES " + numNewFrames);
+		
+		for (int i = 0; i < numNewFrames; i++) {
+			timeFrames.add(new HashMap<Entity, AnimationData>());
+		}
+		
+		int counter1 = 0;
+	}
+	
+//	public void finishCloneFrames() {
+//		if (!cloning) {
+//			return;
+//		}
+//		cloning = false;
+//		
+//		System.out.println("FINISH CLONE");
+//		
+//		int numNewFrames = curFrame - startFrame;
+//		
+//		if (numNewFrames <= 0) {
+//			return;
+//		}
+//		
+//		int prevLastPosition = timeFrames.size() - 1;
+//		
+//		System.out.println("NUM NEW FRAMES " + numNewFrames);
+//		
+//		for (int i = 0; i < numNewFrames; i++) {
+//			timeFrames.add(new HashMap<Entity, AnimationData>());
+//		}
+//		
+//		int counter1 = 0;
+//		
+//		int numFramesAfterCopySegment = prevLastPosition - numNewFrames;
+//		for (int i = 0; i < numFramesAfterCopySegment; i++) {
+//			counter1++;
+//			
+//			int originPosition = prevLastPosition - i;
+//			Map<Entity, AnimationData> originFrame = timeFrames.get(originPosition);
+//			Map<Entity, AnimationData> targetFrame = timeFrames.get(originPosition + numNewFrames);
+//			
+//			for (Map.Entry<Entity, AnimationData> entry : originFrame.entrySet()) {
+//				targetFrame.put(entry.getKey(), entry.getValue().copy());
+//			}
+//		}
+//		
+//		int counter2 = 0;
+//		
+//		for (int i = startFrame + 1; i <= prevLastPosition; i++) {
+//			counter2++;
+//			Map<Entity, AnimationData> sourceFrame = timeFrames.get(startFrame);
+//			Map<Entity, AnimationData> targetFrame = timeFrames.get(i);
+//
+//			targetFrame.clear();
+//			for (Map.Entry<Entity, AnimationData> entry : sourceFrame.entrySet()) {
+//				targetFrame.put(entry.getKey(), entry.getValue().copy());
+//			}
+//		}
+//		
+//		System.out.println(counter1);
+//		System.out.println(counter2);
+//		
+//		slider.setMaximum(slider.getMaximum() + numNewFrames);
+//	}
 }

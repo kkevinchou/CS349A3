@@ -7,6 +7,8 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -18,7 +20,7 @@ import javax.swing.JComponent;
 import javax.swing.JSlider;
 
 @SuppressWarnings("serial")
-class Sketch extends JComponent {
+class SketchController extends JComponent {
 	private Mode mode;
 	private Image image;
 	private Graphics2D graphics2D;
@@ -35,7 +37,7 @@ class Sketch extends JComponent {
 	Polygon selection;
 	List<Entity> selectedEntities;
 
-	public Sketch() {
+	public SketchController() {
 		setMode(Mode.DRAW);
 		setDoubleBuffered(false);
 		
@@ -136,6 +138,8 @@ class Sketch extends JComponent {
 		
 		addMouseListener(new MouseAdapter() {
             public void mouseReleased(MouseEvent e) {
+            	timeLine.finishCloneFrames();
+            	
             	if (mode == Mode.DRAW) {
             		newEntity = null;
             	} else if (mode == Mode.SELECT) {
@@ -151,7 +155,7 @@ class Sketch extends JComponent {
 	        				}
 	        			}
 	        			
-	        			if (fullyContained) {
+	        			if (fullyContained && entity.visible == true) {
 	        				selectedEntities.add(entity);
 	        			}
 	        		}
@@ -160,6 +164,14 @@ class Sketch extends JComponent {
             	}
             }
         });
+	}
+	
+	public void cloneFrames() {
+		timeLine.cloneFrames();
+	}
+	
+	public void finishCloneFrames() {
+		timeLine.finishCloneFrames();
 	}
 	
 	public void clearSelection() {

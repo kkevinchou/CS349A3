@@ -5,6 +5,8 @@ import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -30,7 +32,7 @@ public class Main {
 		Container content = frame.getContentPane();
 		content.setLayout(new BorderLayout());
 
-		final Sketch sketch = new Sketch();
+		final SketchController sketch = new SketchController();
 		content.add(sketch, BorderLayout.CENTER);
 		
 		JToolBar toolbar = createToolBar(sketch);
@@ -44,7 +46,7 @@ public class Main {
 		frame.setVisible(true);
 	}
 	
-	private static JToolBar createToolBar(final Sketch sketch) {
+	private static JToolBar createToolBar(final SketchController sketch) {
 		JToolBar toolbar = new JToolBar();
 		toolbar.setLayout(new FlowLayout(FlowLayout.CENTER));
 		
@@ -75,7 +77,7 @@ public class Main {
 		return toolbar;
 	}
 	
-	private static JPanel createPanel(final Sketch sketch) {
+	private static JPanel createPanel(final SketchController sketch) {
 		JPanel panel = new JPanel(new BorderLayout());
 		JPanel subPanel = new JPanel();
 		
@@ -116,6 +118,22 @@ public class Main {
 		        }
 			}
 		});
+		
+		animationSlider.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_Q) {
+					System.exit(0);
+				} else if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+					sketch.cloneFrames();
+				}
+			}
+			
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+					sketch.finishCloneFrames();
+				}
+			}
+        });
 		
 		return panel;
 	}

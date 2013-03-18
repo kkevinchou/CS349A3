@@ -11,11 +11,11 @@ import java.util.List;
 public class CanvasView implements IView {
 	private SceneModel model;
 	private Graphics2D graphics;
-	private Sketch sketch;
+	private SketchController sketch;
 	private Polygon selection;
 	List<Entity> selectedEntities;
 	
-	public CanvasView(SceneModel model, Sketch sketch, Polygon selection, List<Entity> selectedEntities) {
+	public CanvasView(SceneModel model, SketchController sketch, Polygon selection, List<Entity> selectedEntities) {
 		this.model = model;
 		this.sketch = sketch;
 		this.model.addView(this);
