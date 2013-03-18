@@ -11,9 +11,11 @@ import java.util.List;
 public class CanvasView implements IView {
 	private SceneModel model;
 	private Graphics2D graphics;
+	private Sketch sketch;
 	
-	public CanvasView(SceneModel model) {
+	public CanvasView(SceneModel model, Sketch sketch) {
 		this.model = model;
+		this.sketch = sketch;
 		this.model.addView(this);
 	}
 
@@ -23,12 +25,17 @@ public class CanvasView implements IView {
 			return;
 		}
 		
+		sketch.clear();
+		
 		List<Entity> entities = model.getEntities();
 		List<Entity> selectedEntities = model.getSelectedEntities();
 		
 		graphics.setColor(new Color(255, 132, 44));
 		for (Entity entity : entities) {
 			List<Point> points = entity.getPoints();
+//			Vector2D translation = entity.getTranslation();
+//			int dx = (int)translation.x;
+//			int dy = (int)translation.y;
 			
 			Stroke normalStyle = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
 			Stroke selectedStyle = new BasicStroke(4, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
@@ -42,6 +49,7 @@ public class CanvasView implements IView {
 			Point prevPoint = points.get(0);
 			for (int i = 1; i < points.size(); i++) {
 				Point curPoint = points.get(i);
+//				graphics.drawLine(prevPoint.x + dx, prevPoint.y + dy, curPoint.x + dx, curPoint.y + dy);
 				graphics.drawLine(prevPoint.x, prevPoint.y, curPoint.x, curPoint.y);
 				prevPoint = curPoint;
 			}
@@ -54,6 +62,8 @@ public class CanvasView implements IView {
 			graphics.setColor(new Color(0, 74, 255));
 			graphics.drawPolyline(selection.xpoints, selection.ypoints, selection.npoints);
 		}
+		
+		sketch.redraw();
 	}
 	
 	public void setGraphics(Graphics2D graphics) {

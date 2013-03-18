@@ -16,7 +16,8 @@ import javax.swing.JToolBar;
 enum Mode {
 	DRAW,
 	ERASE,
-	SELECT
+	SELECT,
+	ANIMATE
 }
 
 public class Main {
@@ -26,13 +27,13 @@ public class Main {
 		Container content = frame.getContentPane();
 		content.setLayout(new BorderLayout());
 
-		final SketchController sketch = new SketchController();
+		final Sketch sketch = new Sketch();
 		content.add(sketch, BorderLayout.CENTER);
 		
 		JToolBar toolbar = createToolBar(sketch);
 		content.add(toolbar, BorderLayout.NORTH);
 		
-		JPanel panel = createPanel();
+		JPanel panel = createPanel(sketch);
 		content.add(panel, BorderLayout.SOUTH);
 		
 		frame.setSize(800, 600);
@@ -40,7 +41,7 @@ public class Main {
 		frame.setVisible(true);
 	}
 	
-	private static JToolBar createToolBar(final SketchController sketch) {
+	private static JToolBar createToolBar(final Sketch sketch) {
 		JToolBar toolbar = new JToolBar();
 		toolbar.setLayout(new FlowLayout(FlowLayout.CENTER));
 		
@@ -71,8 +72,24 @@ public class Main {
 		return toolbar;
 	}
 	
-	private static JPanel createPanel() {
+	private static JPanel createPanel(final Sketch sketch) {
 		JPanel panel = new JPanel();
+		
+		JButton playButton = new JButton("Play");
+		playButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sketch.playAnimation();
+			}
+		});
+		panel.add(playButton);
+		
+		JButton pauseButton = new JButton("Pause");
+		pauseButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sketch.pauseAnimation();
+			}
+		});
+		panel.add(pauseButton);
 		
 		JSlider animationSlider = new JSlider();
 		animationSlider.setBorder(BorderFactory.createTitledBorder("Animation Slider"));

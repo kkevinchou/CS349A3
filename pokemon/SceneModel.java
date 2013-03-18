@@ -10,9 +10,9 @@ import java.util.List;
 public class SceneModel implements IModel {
 	private List<Entity> entities;
 	private List<IView> views;
-	private List<Entity> selectedEntities;
 	private Entity currentModel;
-	private Polygon selection;
+	public Polygon selection;
+	public List<Entity> selectedEntities;
 	
 	public SceneModel() {
 		currentModel = null;
@@ -39,6 +39,7 @@ public class SceneModel implements IModel {
 			}
 			
 			if (intersects) {
+				entity.visible = false;
 				entities.remove(i);
 			} else {
 				i++;
@@ -48,9 +49,22 @@ public class SceneModel implements IModel {
 		updateAllViews();
 	}
 	
+	public void translateSelection(int dx, int dy) {
+		for (Entity entity : selectedEntities) {
+			entity.translate(dx, dy);
+		}
+		selection.translate(dx, dy);
+		updateAllViews();
+	}
+	
+	public boolean pointIsInSelection(int x, int y) {
+		return selection.contains(x, y);
+	}
+	
 	public void beginSelection(int x, int y) {
 		selection = new Polygon();
 		addPointToSelection(x, y);
+		updateAllViews();
 	}
 	
 	public void addPointToSelection(int x, int y) {
@@ -77,13 +91,19 @@ public class SceneModel implements IModel {
 			}
 		}
 		
-		System.out.println("Selected count: " + selectedEntities.size());
+//		System.out.println("Selection count: " + selectedEntities.size());
 		
 		updateAllViews();
 	}
 	
 	public Polygon getSelection() {
 		return selection;
+	}
+	
+	public void clearSelection() {
+		selectedEntities.clear();
+		selection = new Polygon();
+		updateAllViews();
 	}
 	
 	public List<Entity> getSelectedEntities() {
@@ -93,6 +113,7 @@ public class SceneModel implements IModel {
 	public void beginEntity(int x, int y) {
 		currentModel = new Entity(x, y);
 		entities.add(currentModel);
+		updateAllViews();
 	}
 	
 	public void addPointToEntity(int x, int y) {
@@ -102,6 +123,7 @@ public class SceneModel implements IModel {
 	
 	public void finishEntity() {
 		currentModel = null;
+		updateAllViews();
 	}
 	
 	public List<Entity> getEntities() {
@@ -122,10 +144,5 @@ public class SceneModel implements IModel {
 		for (IView view : views) {
 			view.updateView();
 		}
-	}
-	
-	public void clearSelection() {
-		selectedEntities.clear();
-		selection = null;
 	}
 }

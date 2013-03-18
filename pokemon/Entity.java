@@ -7,9 +7,14 @@ import java.util.Collections;
 import java.util.List;
 
 public class Entity {
+	private Vector2D position;
 	private List<Point> points;
 	
+	public boolean visible;
+	
 	public Entity(int x, int y) {
+		visible = true;
+		position = new Vector2D(x, y);
 		points = new ArrayList<Point>();
 		addPoint(x, y);
 	}
@@ -30,5 +35,16 @@ public class Entity {
 		}
 		
 		return Collections.unmodifiableList(lines);
+	}
+	
+	public void translate(int dx, int dy) {
+		position.add(new Vector2D(dx, dy));
+		for (Point point : points) {
+			point.translate(dx, dy);
+		}
+	}
+	
+	public Vector2D getPosition() {
+		return position;
 	}
 }
