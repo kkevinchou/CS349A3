@@ -2,7 +2,7 @@ SOURCES = $(wildcard *.java)
 JC = javac
 
 run:
-	@echo Creating $@...
+	@echo Building...
 	@$(JC) $(SOURCES)
 	java Main
 
