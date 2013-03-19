@@ -36,6 +36,7 @@ public class CanvasView implements IView {
 		graphics.setColor(new Color(255, 132, 44));
 		for (Entity entity : entities) {
 			if (!entity.visible) {
+				System.out.println("NOT VISIBLE");
 				continue;
 			}
 			
@@ -53,13 +54,12 @@ public class CanvasView implements IView {
 			Point prevPoint = points.get(0);
 			for (int i = 1; i < points.size(); i++) {
 				Point curPoint = points.get(i);
-//				graphics.drawLine(prevPoint.x + dx, prevPoint.y + dy, curPoint.x + dx, curPoint.y + dy);
 				graphics.drawLine(prevPoint.x, prevPoint.y, curPoint.x, curPoint.y);
 				prevPoint = curPoint;
 			}
 		}
+		System.out.println(entities.size());
 		
-//		Polygon selection = model.getSelection();
 		if (selection != null) {
 			Stroke drawingStroke = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
 			graphics.setStroke(drawingStroke);

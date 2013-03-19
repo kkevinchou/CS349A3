@@ -56,4 +56,15 @@ public class Entity {
 		Vector2D translation = position.sub(this.position);
 		translate(translation);
 	}
+	
+	public Entity copy() {
+		Entity entity = new Entity((int)position.x, (int)position.y);
+		
+		for (int i = 1; i < points.size(); i++) {
+			Point point = points.get(i);
+			entity.addPoint(point.x, point.y);
+		}
+		
+		return entity;
+	}
 }

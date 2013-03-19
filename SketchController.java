@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
@@ -36,6 +37,11 @@ class SketchController extends JComponent {
 	Entity newEntity;
 	Polygon selection;
 	List<Entity> selectedEntities;
+	List<Entity> clipBoardEntities;
+	SketchController self = this;
+	
+	int mouseX;
+	int mouseY;
 
 	public SketchController() {
 		setMode(Mode.DRAW);
@@ -43,6 +49,7 @@ class SketchController extends JComponent {
 		
 		sceneModel = new SceneModel();
 		selectedEntities = new ArrayList<Entity>();
+		clipBoardEntities = new ArrayList<Entity>();
 		selection = new Polygon();
 		canvasView = new CanvasView(sceneModel, this, selection, selectedEntities);
 		newEntity = null;
@@ -89,6 +96,11 @@ class SketchController extends JComponent {
 		});
 		
 		addMouseMotionListener(new MouseMotionAdapter() {
+			public void mouseMoved(MouseEvent e) {
+				mouseX = e.getX();
+				mouseY = e.getY();
+			}
+			
 			public void mouseDragged(MouseEvent e) {
 				int x = e.getX();
 				int y = e.getY();
@@ -138,6 +150,7 @@ class SketchController extends JComponent {
 		
 		addMouseListener(new MouseAdapter() {
             public void mouseReleased(MouseEvent e) {
+            	self.requestFocus();
             	timeLine.finishCloneFrames();
             	
             	if (mode == Mode.DRAW) {
@@ -164,6 +177,49 @@ class SketchController extends JComponent {
             	}
             }
         });
+		
+		addKeyListener(new KeyAdapter() {
+			
+			private boolean ctrlDown = false;
+			
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+					ctrlDown = true;
+				} else if (e.getKeyCode() == KeyEvent.VK_C) {
+					if (ctrlDown) {
+						copySelection();
+					}
+				} else if (e.getKeyCode() == KeyEvent.VK_V) {
+					if (ctrlDown) {
+						pasteSelection();
+					}
+				} else if (e.getKeyCode() == KeyEvent.VK_Q) {
+					System.exit(0);
+				}
+			}
+			
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+					ctrlDown = false;
+				}
+			}
+        });
+	}
+	
+	private void copySelection() {
+		clipBoardEntities.clear();
+		for (Entity entity : selectedEntities) {
+			clipBoardEntities.add(entity.copy());
+		}
+	}
+	
+	private void pasteSelection() {
+		for (Entity entity : clipBoardEntities) {
+			Entity entityCopy = entity.copy();
+			entityCopy.setPosition(new Vector2D(mouseX, mouseY));
+			sceneModel.addEntity(entityCopy);
+			timeLine.addEntity(entityCopy);
+		}
 	}
 	
 	public void cloneFrames() {

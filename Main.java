@@ -33,6 +33,8 @@ public class Main {
 		content.setLayout(new BorderLayout());
 
 		final SketchController sketch = new SketchController();
+		sketch.setFocusable(true);
+        
 		content.add(sketch, BorderLayout.CENTER);
 		
 		JToolBar toolbar = createToolBar(sketch);

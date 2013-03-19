@@ -172,8 +172,6 @@ public class TimeLine {
 		}
 		cloning = true;
 		startFrame = curFrame;
-		
-		System.out.println("START " + startFrame);
 	}
 	
 	public void finishCloneFrames() {
@@ -187,10 +185,6 @@ public class TimeLine {
 		if (numNewFrames <= 0) {
 			return;
 		}
-		
-		System.out.println("CUR " + curFrame);
-		System.out.println("NEW " + numNewFrames);
-		System.out.println("TOTAL " + timeFrames.size());
 		
 		for (int i = 0; i < numNewFrames; i++) {
 			timeFrames.add(new HashMap<Entity, AnimationData>());
