@@ -207,4 +207,8 @@ public class TimeLine {
 		slider.setMaximum(timeFrames.size() + 1);
 		
 	}
+	
+	public void updateCanvas() {
+		view.updateView();
+	}
 }

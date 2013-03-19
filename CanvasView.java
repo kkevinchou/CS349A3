@@ -36,7 +36,6 @@ public class CanvasView implements IView {
 		graphics.setColor(new Color(255, 132, 44));
 		for (Entity entity : entities) {
 			if (!entity.visible) {
-				System.out.println("NOT VISIBLE");
 				continue;
 			}
 			
@@ -58,7 +57,6 @@ public class CanvasView implements IView {
 				prevPoint = curPoint;
 			}
 		}
-		System.out.println(entities.size());
 		
 		if (selection != null) {
 			Stroke drawingStroke = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);

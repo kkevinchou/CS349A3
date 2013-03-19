@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
@@ -145,6 +144,7 @@ class SketchController extends JComponent {
 				
 				oldX = currentX;
 				oldY = currentY;
+				canvasView.updateView();
 			}
 		});
 		
@@ -175,6 +175,7 @@ class SketchController extends JComponent {
             	} else if (mode == Mode.ANIMATE) {
             		timeLine.endRecord();
             	}
+				canvasView.updateView();
             }
         });
 		
@@ -260,7 +261,7 @@ class SketchController extends JComponent {
 			initImage();
 		}
 
-		canvasView.updateView();
+//		canvasView.updateView();
 		g.drawImage(image, 0, 0, null);
 	}
 	

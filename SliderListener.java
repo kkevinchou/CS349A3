@@ -18,5 +18,6 @@ class SliderListener implements ChangeListener {
         } else if (timeLine.cloning) {
         	timeLine.setCurFrame(source.getValue());
         }
+        timeLine.updateCanvas();
     }
 }
